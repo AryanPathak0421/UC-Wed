@@ -109,10 +109,7 @@ const VendorOnboarding = () => {
   };
 
   const canNavigateTo = (targetIndex) => {
-    // Can always go back
     if (targetIndex <= currentStepIndex) return true;
-    
-    // To go forward, all steps from current up to target-1 must be complete
     for (let i = 0; i < targetIndex; i++) {
       if (!isStepComplete(steps[i].id)) {
         return { complete: false, stepLabel: steps[i].label };
@@ -126,7 +123,6 @@ const VendorOnboarding = () => {
       e.preventDefault();
       return;
     }
-    
     const check = canNavigateTo(index);
     if (!check.complete) {
       e.preventDefault();
@@ -150,33 +146,52 @@ const VendorOnboarding = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto pb-12 px-4 sm:px-6">
-      <div className="vendor-surface rounded-3xl p-5 sm:p-8">
+    <div className="max-w-5xl mx-auto pb-12 px-4 sm:px-6 relative z-10">
+      <div className="rounded-[2.5rem] p-6 sm:p-10 shadow-2xl relative overflow-hidden" style={{
+        background: 'rgba(255, 255, 255, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(236, 72, 153, 0.1)'
+      }}>
+        {/* Top gradient accent */}
+        <div className="absolute top-0 left-0 right-0 h-2 rounded-t-[2.5rem]" style={{
+          background: 'linear-gradient(90deg, #ec4899, #db2777, #a855f7, #ec4899)',
+          backgroundSize: '200% 100%',
+          animation: 'gradient-shift 4s ease infinite'
+        }}></div>
+
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600">Vendor Onboarding</p>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">Complete your profile</h2>
-            <p className="text-xs sm:text-sm text-slate-500">Finish setup to boost visibility and unlock leads.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: '#ec4899' }}>Vendor Onboarding</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">Complete your profile</h2>
+            <p className="text-xs sm:text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Finish setup to boost visibility and unlock leads.</p>
           </div>
-          <div className="text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+          <div className="text-[10px] sm:text-xs font-black uppercase tracking-wider px-4 py-2 rounded-full" style={{
+            background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+            color: '#be185d',
+            border: '1px solid rgba(236, 72, 153, 0.1)'
+          }}>
             Step {currentStepIndex + 1} of {steps.length}
           </div>
         </div>
 
         {/* Responsive Step Navigation */}
-        <div className="mt-8 overflow-x-auto no-scrollbar pb-2 -mx-5 px-5 sm:mx-0 sm:px-0">
+        <div className="mt-10 overflow-x-auto no-scrollbar pb-2 -mx-5 px-5 sm:mx-0 sm:px-0">
           <div className="flex flex-nowrap sm:flex-wrap gap-2.5 sm:gap-3 min-w-max">
             {steps.map((step, index) => (
               <NavLink
                 key={step.id}
                 to={'/vendor/onboarding/' + step.id}
                 onClick={(e) => handleStepClick(e, index, step.id)}
-                className={'rounded-full px-4 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-xs font-bold transition-all border ' + 
-                  (index === currentStepIndex ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100 ring-4 ring-emerald-50 border-emerald-600' : 
-                   index < currentStepIndex ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
-                   'bg-slate-50 text-slate-400 border-slate-100 opacity-70')}
+                className="rounded-2xl px-5 py-3 text-[11px] sm:text-xs font-black transition-all uppercase tracking-wider"
+                style={index === currentStepIndex 
+                  ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' } 
+                  : index < currentStepIndex 
+                    ? { background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d', border: '1px solid rgba(236, 72, 153, 0.15)' } 
+                    : { background: 'rgba(253, 242, 248, 0.3)', color: '#94a3b8', border: '1px solid rgba(236, 72, 153, 0.08)' }
+                }
               >
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-2">
                   {index < currentStepIndex ? '✓' : index + 1 + '.'}
                   {step.label}
                 </span>
@@ -185,15 +200,19 @@ const VendorOnboarding = () => {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-10">
           {stepId === 'business' && (
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-              <div className="space-y-3 flex flex-col">
-                <label className="text-sm font-bold text-slate-700 flex items-center gap-1 ml-1">
-                  Business description <span className="text-emerald-500">*</span>
+              <div className="space-y-2 flex flex-col">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>
+                  Business description <span style={{ color: '#ec4899' }}>*</span>
                 </label>
                 <textarea
-                  className="w-full grow min-h-[160px] lg:min-h-[220px] rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-4 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium leading-relaxed"
+                  className="w-full grow min-h-[160px] lg:min-h-[220px] rounded-2xl px-5 py-4 text-sm font-semibold transition-all resize-none"
+                  style={{
+                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.6)'
+                  }}
                   value={vendorState.businessDetails.description}
                   onChange={(event) => updateVendorState({
                     businessDetails: { ...vendorState.businessDetails, description: event.target.value }
@@ -201,13 +220,17 @@ const VendorOnboarding = () => {
                   placeholder="Describe your journey, specialized skills, and what makes your service exceptional..."
                 />
               </div>
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 flex items-center gap-1 ml-1">
-                    Years of experience <span className="text-emerald-500">*</span>
+                  <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>
+                    Years of experience <span style={{ color: '#ec4899' }}>*</span>
                   </label>
                   <input
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-5 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                    className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                    style={{
+                      border: '1px solid rgba(236, 72, 153, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.6)'
+                    }}
                     value={vendorState.businessDetails.years}
                     placeholder="e.g. 5+ Years"
                     onChange={(event) => updateVendorState({
@@ -216,11 +239,15 @@ const VendorOnboarding = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700 flex items-center gap-1 ml-1">
-                    Team size <span className="text-emerald-500">*</span>
+                  <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>
+                    Team size <span style={{ color: '#ec4899' }}>*</span>
                   </label>
                   <input
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-5 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                    className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                    style={{
+                      border: '1px solid rgba(236, 72, 153, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.6)'
+                    }}
                     value={vendorState.businessDetails.teamSize}
                     placeholder="e.g. 8 Experts"
                     onChange={(event) => updateVendorState({
@@ -229,11 +256,15 @@ const VendorOnboarding = () => {
                   />
                 </div>
                 <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                  <label className="text-sm font-bold text-slate-700 flex items-center gap-1 ml-1">
-                    Languages spoken <span className="text-emerald-500">*</span>
+                  <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>
+                    Languages spoken <span style={{ color: '#ec4899' }}>*</span>
                   </label>
                   <input
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-5 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                    className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                    style={{
+                      border: '1px solid rgba(236, 72, 153, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.6)'
+                    }}
                     value={vendorState.businessDetails.languages.join(', ')}
                     onChange={(event) => updateVendorState({
                       businessDetails: { ...vendorState.businessDetails, languages: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }
@@ -242,11 +273,15 @@ const VendorOnboarding = () => {
                   />
                 </div>
                 <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                  <label className="text-sm font-bold text-slate-700 flex items-center gap-1 ml-1">
-                    Service cities <span className="text-emerald-500">*</span>
+                  <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>
+                    Service cities <span style={{ color: '#ec4899' }}>*</span>
                   </label>
                   <input
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-5 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                    className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                    style={{
+                      border: '1px solid rgba(236, 72, 153, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.6)'
+                    }}
                     value={vendorState.businessDetails.serviceCities.join(', ')}
                     onChange={(event) => updateVendorState({
                       businessDetails: { ...vendorState.businessDetails, serviceCities: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }
@@ -260,31 +295,39 @@ const VendorOnboarding = () => {
 
           {stepId === 'services' && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between bg-white/50 p-6 rounded-3xl border border-pink-100">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Services offered</h3>
-                  <p className="text-sm text-slate-500">Add information about the services you provide.</p>
+                  <h3 className="text-xl font-black text-slate-900 leading-tight">Services offered</h3>
+                  <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Add information about the services you provide.</p>
                 </div>
                 <button 
                   type="button" 
-                  className="vendor-cta rounded-xl px-4 py-2 text-xs font-semibold"
+                  className="vendor-cta rounded-2xl px-6 py-3 text-xs font-black tracking-wide"
                   onClick={() => setShowServiceModal(true)}
                 >
-                  Add service
+                  ➕ Add service
                 </button>
               </div>
 
               {showServiceModal && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 overflow-y-auto">
-                  <div className="bg-white w-full max-w-xl rounded-[2rem] p-8 shadow-2xl relative my-8">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 overflow-y-auto" style={{
+                  background: 'rgba(15, 23, 42, 0.5)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)'
+                }}>
+                  <div className="w-full max-w-xl rounded-[2rem] p-8 shadow-2xl relative my-8" style={{
+                    background: 'linear-gradient(180deg, #ffffff 0%, #fdf2f8 100%)',
+                    border: '1px solid rgba(236, 72, 153, 0.1)'
+                  }}>
                     <div className="flex items-center justify-between mb-8">
                       <div>
                         <h3 className="text-2xl font-black text-slate-900 leading-none">Add New Service</h3>
-                        <p className="text-sm text-slate-500 mt-2 font-medium">Create a new service listing for your profile.</p>
+                        <p className="text-sm font-medium mt-2" style={{ color: '#94a3b8' }}>Create a new service listing for your profile.</p>
                       </div>
                       <button 
                         onClick={() => setShowServiceModal(false)} 
-                        className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all active:scale-90"
+                        className="h-10 w-10 flex items-center justify-center rounded-full text-slate-400 hover:text-rose-500 transition-all active:scale-90"
+                        style={{ background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)' }}
                       >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -295,18 +338,26 @@ const VendorOnboarding = () => {
                     <div className="space-y-6">
                       <div className="grid gap-5 sm:grid-cols-2">
                         <div className="space-y-2.5">
-                          <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">Service Name</label>
+                          <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Service Name</label>
                           <input 
-                            className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-5 py-3.5 text-sm font-semibold focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all"
+                            className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                            style={{
+                              border: '1px solid rgba(236, 72, 153, 0.15)',
+                              background: 'rgba(253, 242, 248, 0.3)'
+                            }}
                             placeholder="e.g. Royal Stage Decor"
                             value={newService.name}
                             onChange={(e) => setNewService({...newService, name: e.target.value})}
                           />
                         </div>
                         <div className="space-y-2.5">
-                          <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">Category</label>
+                          <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Category</label>
                           <select 
-                            className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-5 py-3.5 text-sm font-semibold focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all appearance-none"
+                            className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all appearance-none"
+                            style={{
+                              border: '1px solid rgba(236, 72, 153, 0.15)',
+                              background: 'rgba(253, 242, 248, 0.3)'
+                            }}
                             value={newService.category}
                             onChange={(e) => setNewService({...newService, category: e.target.value})}
                           >
@@ -320,10 +371,14 @@ const VendorOnboarding = () => {
                       </div>
 
                       <div className="space-y-2.5">
-                        <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">Starting Price (₹)</label>
+                        <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Starting Price (₹)</label>
                         <input 
                           type="number"
-                          className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-5 py-3.5 text-sm font-semibold focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all"
+                          className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                          style={{
+                            border: '1px solid rgba(236, 72, 153, 0.15)',
+                            background: 'rgba(253, 242, 248, 0.3)'
+                          }}
                           placeholder="e.g. 50000"
                           value={newService.basePrice}
                           onChange={(e) => setNewService({...newService, basePrice: e.target.value})}
@@ -331,13 +386,17 @@ const VendorOnboarding = () => {
                       </div>
 
                       <div className="space-y-3 pt-2">
-                        <p className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">Key Inclusions</p>
+                        <p className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Key Inclusions</p>
                         <div className="space-y-3">
                           {newService.inclusions.map((inc, idx) => (
                             <input 
                               key={idx}
                               placeholder={`Service Feature ${idx + 1}`}
-                              className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-5 py-3 text-sm font-medium focus:border-emerald-500 focus:bg-white transition-all outline-none"
+                              className="w-full rounded-2xl px-5 py-3 text-sm font-medium transition-all outline-none"
+                              style={{
+                                border: '1px solid rgba(236, 72, 153, 0.12)',
+                                background: 'rgba(253, 242, 248, 0.2)'
+                              }}
                               value={inc}
                               onChange={(e) => {
                                 const incs = [...newService.inclusions];
@@ -350,10 +409,10 @@ const VendorOnboarding = () => {
                       </div>
 
                       <button 
-                        className="vendor-cta w-full rounded-2xl py-5 font-bold text-lg mt-6 shadow-xl shadow-emerald-100 flex items-center justify-center gap-2 active:scale-95 transition-all"
+                        className="vendor-cta w-full rounded-2xl py-5 font-black text-lg mt-6 active:scale-95 transition-all"
                         onClick={handleSaveService}
                       >
-                        Save Service
+                        ✨ Save Service
                       </button>
                     </div>
                   </div>
@@ -361,31 +420,50 @@ const VendorOnboarding = () => {
               )}
 
               {vendorState.services.length === 0 ? (
-                <div className="rounded-2xl border-2 border-dashed border-slate-100 bg-slate-50/30 p-12 text-center">
-                  <p className="text-sm font-medium text-slate-500">No services added yet. Click "Add service" to get started.</p>
+                <div className="rounded-3xl border border-dashed p-16 text-center" style={{
+                  borderColor: 'rgba(236, 72, 153, 0.3)',
+                  background: 'rgba(253, 242, 248, 0.3)'
+                }}>
+                  <div className="text-4xl mb-4">✨</div>
+                  <p className="text-sm font-bold" style={{ color: '#94a3b8' }}>No services added yet. Click &quot;Add service&quot; to get started.</p>
                 </div>
               ) : (
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   {vendorState.services.map((service) => (
-                    <div key={service.id} className="rounded-2xl border border-slate-200 p-4 bg-white shadow-sm transition-hover hover:shadow-md relative group">
+                    <div key={service.id} className="rounded-3xl p-6 relative group transition-all hover:scale-[1.02]" style={{
+                      background: 'rgba(255, 255, 255, 0.6)',
+                      border: '1px solid rgba(236, 72, 153, 0.1)',
+                      boxShadow: '0 4px 20px rgba(236, 72, 153, 0.05)'
+                    }}>
                       <button 
                         onClick={() => updateVendorState({ services: vendorState.services.filter(s => s.id !== service.id) })}
-                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-rose-600 hover:text-white"
+                        className="absolute -top-3 -right-3 h-8 w-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+                        style={{
+                          background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+                          border: '1px solid rgba(236, 72, 153, 0.2)',
+                          color: '#be185d'
+                        }}
                       >
-                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-slate-900">{service.name}</h4>
-                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{service.category}</span>
+                        <h4 className="font-black text-slate-900 text-lg">{service.name}</h4>
+                        <span className="rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-wider" style={{
+                          background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d'
+                        }}>{service.category}</span>
                       </div>
-                      <p className="mt-2 text-sm text-slate-500 font-medium">Base price: ₹{service.basePrice.toLocaleString()}</p>
-                      <div className="mt-3 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Packages: {service.packages.map((pkg) => pkg.name).join(', ')}</div>
+                      <p className="mt-3 text-sm font-bold" style={{ color: '#ec4899' }}>Base price: ₹{service.basePrice.toLocaleString()}</p>
+                      <div className="mt-4 text-[10px] font-black uppercase tracking-wider" style={{ color: '#94a3b8' }}>Packages: <span style={{ color: '#64748b' }}>{service.packages.map((pkg) => pkg.name).join(', ')}</span></div>
                       {service.inclusions && service.inclusions.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-1.5">
+                        <div className="mt-4 flex flex-wrap gap-2">
                           {service.inclusions.map((inc, i) => (
-                            <span key={i} className="px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[10px] text-slate-500">{inc}</span>
+                            <span key={i} className="px-3 py-1 rounded-full text-[10px] font-bold" style={{
+                              background: 'rgba(253, 242, 248, 0.5)',
+                              border: '1px solid rgba(236, 72, 153, 0.08)',
+                              color: '#64748b'
+                            }}>{inc}</span>
                           ))}
                         </div>
                       )}
@@ -398,21 +476,29 @@ const VendorOnboarding = () => {
 
           {stepId === 'pricing' && (
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700 flex items-center gap-1">
-                  Price range <span className="text-emerald-500">*</span>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>
+                  Price range <span style={{ color: '#ec4899' }}>*</span>
                 </label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                  className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                  style={{
+                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.6)'
+                  }}
                   value={vendorState.pricing.range}
-                  placeholder="e.g. ₹50,000 - ₹2,00,000"
+                  placeholder="e.g. ₹50k - ₹2L"
                   onChange={(event) => updateVendorState({ pricing: { ...vendorState.pricing, range: event.target.value } })}
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700">Pricing notes</label>
+              <div className="space-y-2 lg:col-span-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Pricing notes</label>
                 <textarea
-                  className="h-28 w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                  className="h-32 w-full rounded-2xl px-5 py-4 text-sm font-semibold transition-all resize-none"
+                  style={{
+                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.6)'
+                  }}
                   value={vendorState.pricing.notes}
                   placeholder="Any additional details about your pricing approach or travel charges..."
                   onChange={(event) => updateVendorState({ pricing: { ...vendorState.pricing, notes: event.target.value } })}
@@ -422,23 +508,24 @@ const VendorOnboarding = () => {
           )}
 
           {stepId === 'portfolio' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
+            <div className="space-y-8">
+              <div className="flex items-center justify-between bg-white/50 p-6 rounded-3xl border border-pink-100">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Portfolio uploads</h3>
-                  <p className="text-sm text-slate-500">Upload your best work to attract more customers.</p>
+                  <h3 className="text-xl font-black text-slate-900 leading-tight">Portfolio uploads</h3>
+                  <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Upload your best work to attract more customers.</p>
                 </div>
               </div>
               
               <div className="grid gap-8 md:grid-cols-2">
                 <div className="space-y-4">
-                  <div className="rounded-3xl border border-dashed border-emerald-200 p-8 bg-emerald-50/30">
-                    <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-6">Add new showcase</p>
+                  <div className="rounded-[2rem] border border-pink-100 p-8" style={{ background: 'linear-gradient(135deg, rgba(253,242,248,0.5), rgba(245,243,255,0.5))' }}>
+                    <p className="text-[11px] font-black uppercase tracking-widest mb-6" style={{ color: '#ec4899' }}>Add new showcase</p>
                     <div className="space-y-5">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 ml-1">Project Title</label>
+                        <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Project Title</label>
                         <input 
-                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-medium focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all"
+                          className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                          style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.8)' }}
                           placeholder="e.g. Royal Palace Wedding"
                           value={newItem.title}
                           onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
@@ -446,9 +533,10 @@ const VendorOnboarding = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 ml-1">Category Tag</label>
+                        <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Category Tag</label>
                         <input 
-                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-medium focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all"
+                          className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                          style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.8)' }}
                           placeholder="e.g. Reception, Ceremony"
                           value={newItem.tag}
                           onChange={(e) => setNewItem({ ...newItem, tag: e.target.value })}
@@ -464,7 +552,7 @@ const VendorOnboarding = () => {
                       />
                       <button 
                         type="button" 
-                        className="vendor-cta w-full rounded-2xl px-4 py-4 text-sm font-bold shadow-md shadow-emerald-100 mt-2" 
+                        className="vendor-cta w-full rounded-2xl py-4 font-black text-base mt-4 active:scale-95 transition-all"
                         onClick={handleUploadClick}
                       >
                         Select & Upload Media
@@ -475,16 +563,20 @@ const VendorOnboarding = () => {
 
                 <div className="grid gap-4 grid-cols-2 h-fit">
                   {vendorState.portfolio.length === 0 ? (
-                    <div className="col-span-2 rounded-2xl border border-slate-100 bg-slate-50/30 p-8 text-center flex items-center justify-center">
-                      <p className="text-xs text-slate-400 font-medium">Your portfolio is empty.</p>
+                    <div className="col-span-2 rounded-[2rem] border border-dashed p-12 text-center flex flex-col items-center justify-center" style={{
+                      borderColor: 'rgba(236, 72, 153, 0.3)',
+                      background: 'rgba(253, 242, 248, 0.3)'
+                    }}>
+                      <div className="text-3xl mb-3">📷</div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#94a3b8' }}>Your portfolio is empty</p>
                     </div>
                   ) : (
                     vendorState.portfolio.map((item) => (
-                      <div key={item.id} className="group relative rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
-                        <img src={item.url} alt={item.title} className="h-36 w-full object-cover transition-transform group-hover:scale-105" />
-                        <div className="p-3 bg-white">
-                          <p className="text-xs font-bold text-slate-900 truncate">{item.title}</p>
-                          <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">{item.tag}</p>
+                      <div key={item.id} className="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-pink-50">
+                        <img src={item.url} alt={item.title} className="h-40 w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                          <p className="text-sm font-black text-white truncate">{item.title}</p>
+                          <p className="text-[10px] text-pink-300 font-bold mt-0.5 tracking-wider uppercase">{item.tag}</p>
                         </div>
                       </div>
                     ))
@@ -496,17 +588,26 @@ const VendorOnboarding = () => {
 
           {stepId === 'documents' && (
             <div className="grid gap-6 md:grid-cols-2">
-              <div className="lg:col-span-2">
-                <h3 className="text-lg font-semibold text-slate-900">Verification documents</h3>
-                <p className="text-sm text-slate-500 mt-1">Upload required documents to verify your business authenticity.</p>
+              <div className="lg:col-span-2 bg-white/50 p-6 rounded-3xl border border-pink-100">
+                <h3 className="text-xl font-black text-slate-900 leading-tight">Verification documents</h3>
+                <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Upload required documents to verify your business authenticity.</p>
               </div>
               {['idProof', 'gst', 'contract'].map((docKey) => (
-                <div key={docKey} className="flex items-center justify-between rounded-2xl border border-slate-200 px-6 py-5 bg-white shadow-sm hover:border-emerald-200 transition-colors">
+                <div key={docKey} className="flex items-center justify-between rounded-3xl p-6 transition-all hover:scale-[1.02]" style={{
+                  background: 'rgba(255, 255, 255, 0.7)',
+                  border: '1px solid rgba(236, 72, 153, 0.1)',
+                  boxShadow: '0 4px 20px rgba(236, 72, 153, 0.05)'
+                }}>
                   <div>
-                    <p className="text-sm font-bold text-slate-800">
-                      {(docKey === 'idProof' ? '1. ID Proof (Aadhar/PAN)' : docKey === 'gst' ? '2. GST Certificate' : '3. Service Agreement')}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">PDF, JPG, PNG (Max 5MB)</p>
+                    <div className="flex items-center gap-3 mb-1">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white" style={{ background: 'linear-gradient(135deg, #ec4899, #db2777)' }}>
+                        {docKey === 'idProof' ? '1' : docKey === 'gst' ? '2' : '3'}
+                      </div>
+                      <p className="text-sm font-black text-slate-900">
+                        {docKey === 'idProof' ? 'ID Proof (Aadhar/PAN)' : docKey === 'gst' ? 'GST Certificate' : 'Service Agreement'}
+                      </p>
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider ml-9" style={{ color: '#94a3b8' }}>PDF, JPG (Max 5MB)</p>
                   </div>
                   <input
                     type="file"
@@ -517,10 +618,13 @@ const VendorOnboarding = () => {
                   />
                   <button
                     type="button"
-                    className={'rounded-xl px-4 py-2 text-xs font-bold transition-all ' + (vendorState.documents[docKey] ? 'bg-emerald-600 text-white shadow-md' : 'border border-emerald-200 text-emerald-700 hover:bg-emerald-50')}
+                    className="rounded-2xl px-5 py-3 text-xs font-black transition-all active:scale-95 whitespace-nowrap"
+                    style={vendorState.documents[docKey] 
+                      ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' } 
+                      : { background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d', border: '1px solid rgba(236, 72, 153, 0.15)' }}
                     onClick={() => handleDocClick(docKey)}
                   >
-                    {(vendorState.documents[docKey] ? '✓ Uploaded' : 'Upload File')}
+                    {vendorState.documents[docKey] ? '✓ Uploaded' : 'Upload File'}
                   </button>
                 </div>
               ))}
@@ -529,41 +633,45 @@ const VendorOnboarding = () => {
 
           {stepId === 'bank' && (
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="lg:col-span-2">
-                <h3 className="text-lg font-semibold text-slate-900">Bank details</h3>
-                <p className="text-sm text-slate-500 mt-1">Provide your banking information for secure payments.</p>
+              <div className="lg:col-span-2 bg-white/50 p-6 rounded-3xl border border-pink-100">
+                <h3 className="text-xl font-black text-slate-900 leading-tight">Bank details</h3>
+                <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Provide your banking information for secure payments.</p>
               </div>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700">Account name <span className="text-emerald-500">*</span></label>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Account name <span style={{ color: '#ec4899' }}>*</span></label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                  className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                  style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.accountName}
                   placeholder="Name as per bank records"
                   onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, accountName: event.target.value } })}
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700">Account number <span className="text-emerald-500">*</span></label>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Account number <span style={{ color: '#ec4899' }}>*</span></label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                  className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                  style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.accountNumber}
                   placeholder="Enter 12-16 digit account number"
                   onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, accountNumber: event.target.value } })}
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700">IFSC <span className="text-emerald-500">*</span></label>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>IFSC Code <span style={{ color: '#ec4899' }}>*</span></label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                  className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                  style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.ifsc}
                   placeholder="e.g. SBIN0001234"
                   onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, ifsc: event.target.value } })}
                 />
               </div>
-              <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-700">UPI ID</label>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>UPI ID</label>
                 <input
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/30 px-4 py-3.5 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
+                  className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
+                  style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.upiId}
                   placeholder="e.g. name@upi"
                   onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, upiId: event.target.value } })}
@@ -573,8 +681,13 @@ const VendorOnboarding = () => {
           )}
         </div>
 
-        <div className="mt-12 flex justify-end">
-          <button type="button" className="vendor-cta rounded-2xl px-12 py-4 text-base font-bold shadow-lg shadow-emerald-100 transition-all hover:px-14 active:scale-95" onClick={handleNext}>
+        <div className="mt-12 pt-8 border-t flex justify-end" style={{ borderColor: 'rgba(236, 72, 153, 0.15)' }}>
+          <button 
+            type="button" 
+            className="vendor-cta rounded-2xl px-12 py-4 text-base font-black tracking-wide shadow-xl transition-all active:scale-95" 
+            style={{ boxShadow: '0 8px 30px rgba(236, 72, 153, 0.25)' }}
+            onClick={handleNext}
+          >
             {(currentStepIndex === steps.length - 1 ? 'Finish Profile Setup' : 'Save & Continue')}
           </button>
         </div>

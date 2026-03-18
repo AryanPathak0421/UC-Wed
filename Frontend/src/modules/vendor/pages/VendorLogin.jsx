@@ -9,7 +9,6 @@ const VendorLogin = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Simulate login logic
     if (email && password) {
       navigate('/vendor/dashboard');
     } else {
@@ -18,63 +17,109 @@ const VendorLogin = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-20">
-      <div className="vendor-surface rounded-3xl p-8 shadow-xl">
-        <div className="text-center mb-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-2">Vendor Portal</p>
-          <h2 className="text-3xl font-bold text-slate-900">Welcome Back</h2>
-          <p className="text-sm text-slate-500 mt-2">Sign in to manage your wedding business.</p>
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5f3ff 70%, #eff6ff 100%)'
+    }}>
+      {/* Decorative blobs */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20" style={{
+        background: 'radial-gradient(circle, #ec4899, transparent 70%)',
+        filter: 'blur(80px)'
+      }}></div>
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full opacity-15" style={{
+        background: 'radial-gradient(circle, #a855f7, transparent 70%)',
+        filter: 'blur(80px)'
+      }}></div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="rounded-[2rem] p-8 lg:p-10 shadow-2xl relative overflow-hidden" style={{
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(236, 72, 153, 0.1)'
+        }}>
+          {/* Top gradient accent */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-[2rem]" style={{
+            background: 'linear-gradient(90deg, #ec4899, #db2777, #a855f7, #ec4899)',
+            backgroundSize: '200% 100%',
+            animation: 'gradient-shift 4s ease infinite'
+          }}></div>
+
+          <div className="text-center mb-8">
+            <div className="inline-flex h-16 w-16 rounded-2xl items-center justify-center text-2xl mb-4 shadow-lg" style={{
+              background: 'linear-gradient(135deg, #ec4899, #db2777)',
+              boxShadow: '0 8px 30px rgba(236, 72, 153, 0.35)'
+            }}>
+              <span className="text-white font-black">W</span>
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] mb-2" style={{ color: '#ec4899' }}>Vendor Portal</p>
+            <h2 className="text-3xl font-black text-slate-900">Welcome Back</h2>
+            <p className="text-sm font-medium mt-2" style={{ color: '#94a3b8' }}>Sign in to manage your wedding business.</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Email Address</label>
+              <div className="relative">
+                <span className="absolute left-4 top-3.5" style={{ color: '#cbd5e1' }}>
+                  <Icon name="mail" size="sm" color="current" />
+                </span>
+                <input
+                  type="email"
+                  className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-semibold transition-all"
+                  style={{
+                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    background: 'rgba(253, 242, 248, 0.3)'
+                  }}
+                  placeholder="vendor@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Password</label>
+                <button type="button" className="text-[11px] font-black uppercase tracking-wider" style={{ color: '#ec4899' }}>Forgot?</button>
+              </div>
+              <div className="relative">
+                <span className="absolute left-4 top-3.5" style={{ color: '#cbd5e1' }}>
+                  <Icon name="lock" size="sm" color="current" />
+                </span>
+                <input
+                  type="password"
+                  className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-semibold transition-all"
+                  style={{
+                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    background: 'rgba(253, 242, 248, 0.3)'
+                  }}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="vendor-cta w-full rounded-2xl py-4 font-black text-lg tracking-wide mt-2"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm font-medium" style={{ color: '#94a3b8' }}>
+              Don't have a vendor account? 
+              <Link to="/vendor/register" className="ml-1 font-black" style={{ color: '#ec4899' }}>Register Now</Link>
+            </p>
+          </div>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700">Email Address</label>
-            <div className="relative">
-              <span className="absolute left-4 top-3.5 text-slate-400">
-                <Icon name="mail" size="sm" color="current" />
-              </span>
-              <input
-                type="email"
-                className="w-full rounded-xl border border-slate-200 pl-11 pr-4 py-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
-                placeholder="vendor@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-semibold text-slate-700">Password</label>
-              <button type="button" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">Forgot?</button>
-            </div>
-            <div className="relative">
-              <span className="absolute left-4 top-3.5 text-slate-400">
-                <Icon name="lock" size="sm" color="current" />
-              </span>
-              <input
-                type="password"
-                className="w-full rounded-xl border border-slate-200 pl-11 pr-4 py-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-50 transition-all font-medium"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="vendor-cta w-full rounded-2xl py-4 font-bold text-lg shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transition-all"
-          >
-            Sign In
-          </button>
-        </form>
-
-        <div className="mt-10 text-center">
-          <p className="text-sm text-slate-500">
-            Don't have a vendor account? 
-            <Link to="/vendor/register" className="ml-1 font-bold text-emerald-600 hover:text-emerald-700">Register Now</Link>
-          </p>
+        {/* Trust badges below */}
+        <div className="flex justify-center gap-6 mt-6">
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#94a3b8' }}>&#128274; Secure Login</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#94a3b8' }}>&#9989; Trusted Platform</span>
         </div>
       </div>
     </div>

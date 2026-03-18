@@ -19,71 +19,110 @@ const VendorLeads = () => {
     navigate('/vendor/quotes', { state: { prefillName: customerName } });
   };
 
+  const getLeadStatusStyle = (status) => {
+    switch (status) {
+      case 'New': return { bg: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d' };
+      case 'Quoted': return { bg: 'linear-gradient(135deg, #eff6ff, #dbeafe)', color: '#1d4ed8' };
+      case 'Confirmed': return { bg: 'linear-gradient(135deg, #ec4899, #db2777)', color: '#ffffff' };
+      default: return { bg: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)', color: '#475569' };
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="group flex flex-col gap-4 rounded-3xl bg-white border border-slate-100 px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300">
-        <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="vendor-surface rounded-3xl p-7 relative overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-44 h-44 rounded-full opacity-15" style={{
+          background: 'radial-gradient(circle, #ec4899, transparent 70%)'
+        }}></div>
+        <div className="flex items-center justify-between relative z-10">
           <div>
-            <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] text-emerald-600/80">Vendor Live Control</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: '#ec4899' }}>Vendor Live Control</p>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-1">Incoming inquiries</h2>
-            <p className="text-sm text-slate-500 font-medium">Tracking {(vendorState.leads || []).length} active potential clients</p>
+            <p className="text-sm font-medium" style={{ color: '#94a3b8' }}>Tracking {(vendorState.leads || []).length} active potential clients</p>
           </div>
           <button 
             onClick={() => window.location.reload()}
-            className="h-10 px-4 rounded-xl bg-slate-50 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 border border-slate-100 transition-all active:scale-95 flex items-center gap-2 text-xs font-bold"
+            className="h-10 px-5 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all active:scale-95 hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+              border: '1px solid rgba(236, 72, 153, 0.1)',
+              color: '#be185d'
+            }}
           >
             <Icon name="clock" size="xs" /> Refresh
           </button>
         </div>
       </div>
 
-      <div className="vendor-surface rounded-2xl p-6">
+      {/* Leads List */}
+      <div className="vendor-surface rounded-3xl p-7">
         <div className="space-y-4">
           {(vendorState.leads || []).length === 0 ? (
-            <p className="text-center py-8 text-slate-500">No leads found.</p>
+            <div className="text-center py-16">
+              <div className="text-4xl mb-4">💌</div>
+              <p className="font-bold text-slate-400">No leads found</p>
+              <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>New inquiries will appear here</p>
+            </div>
           ) : (
-            vendorState.leads.map((lead) => (
-              <div key={lead.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-100 px-4 py-4 hover:border-emerald-200 transition-colors">
-                <div className="flex-1 min-w-[200px]">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-slate-900">{lead.customerName}</p>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                      lead.status === 'New' ? 'bg-emerald-100 text-emerald-700' : 
-                      lead.status === 'Quoted' ? 'bg-blue-100 text-blue-700' :
-                      lead.status === 'Confirmed' ? 'bg-emerald-600 text-white' :
-                      'bg-slate-100 text-slate-600'
-                    }`}>
-                      {lead.status}
-                    </span>
+            vendorState.leads.map((lead) => {
+              const statusStyle = getLeadStatusStyle(lead.status);
+              return (
+                <div key={lead.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5 transition-all hover:scale-[1.01] group" style={{
+                  border: '1px solid rgba(236, 72, 153, 0.08)',
+                  background: 'rgba(253, 242, 248, 0.2)'
+                }}>
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="flex items-center gap-2">
+                      <div className="h-9 w-9 rounded-xl flex items-center justify-center text-sm flex-shrink-0" style={{
+                        background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)'
+                      }}>💍</div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">{lead.customerName}</p>
+                        <span className="text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider" style={{
+                          background: statusStyle.bg,
+                          color: statusStyle.color
+                        }}>{lead.status}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs font-medium mt-2" style={{ color: '#94a3b8' }}>{lead.eventDate} • {lead.eventLocation}</p>
+                    <p className="mt-2 text-xs italic font-medium" style={{ color: '#64748b' }}>"{lead.message}"</p>
+                    <div className="mt-2 flex gap-4 text-[10px] font-black uppercase tracking-wider" style={{ color: '#cbd5e1' }}>
+                      <span>{lead.phone}</span>
+                      <span>{lead.email}</span>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">{lead.eventDate} • {lead.eventLocation}</p>
-                  <p className="mt-2 text-xs text-slate-600 italic">"{lead.message}"</p>
-                  <div className="mt-2 flex gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    <span>{lead.phone}</span>
-                    <span>{lead.email}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {lead.status !== 'Quoted' && lead.status !== 'Confirmed' && (
-                    <button 
-                      onClick={() => handleCreateQuote(lead.customerName)}
-                      className="px-3 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-colors flex items-center gap-2"
+                  <div className="flex items-center gap-3">
+                    {lead.status !== 'Quoted' && lead.status !== 'Confirmed' && (
+                      <button 
+                        onClick={() => handleCreateQuote(lead.customerName)}
+                        className="px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+                        style={{
+                          background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+                          color: '#be185d',
+                          border: '1px solid rgba(236, 72, 153, 0.15)'
+                        }}
+                      >
+                        <Icon name="edit" size="xs" /> Send Quote
+                      </button>
+                    )}
+                    <select
+                      className="rounded-xl bg-white px-3 py-2.5 text-xs font-bold appearance-none cursor-pointer"
+                      style={{
+                        border: '1px solid rgba(236, 72, 153, 0.15)',
+                        color: '#475569'
+                      }}
+                      value={lead.status}
+                      onChange={(event) => updateStatus(lead.id, event.target.value)}
                     >
-                      <Icon name="edit" size="xs" /> Send Quote
-                    </button>
-                  )}
-                  <select
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    value={lead.status}
-                    onChange={(event) => updateStatus(lead.id, event.target.value)}
-                  >
-                    {statusOptions.map((status) => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
+                      {statusOptions.map((status) => (
+                        <option key={status} value={status}>{status}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

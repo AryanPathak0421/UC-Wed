@@ -9,16 +9,21 @@ const VendorLayout = () => {
   const { vendorState } = useVendorState();
 
   return (
-    <div className="vendor-shell min-h-screen bg-slate-50">
-      <div className="flex min-h-screen">
+    <div className="vendor-shell min-h-screen relative overflow-hidden">
+      {/* Decorative Background Blobs */}
+      <div className="decor-blob decor-blob-1"></div>
+      <div className="decor-blob decor-blob-2"></div>
+      
+      <div className="flex min-h-screen relative z-10">
         <div
-          className={`fixed inset-0 bg-black/40 z-30 transition-opacity lg:hidden ${
-            sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          className={`fixed inset-0 z-30 transition-all duration-300 lg:hidden ${
+            sidebarOpen ? 'opacity-100 backdrop-blur-sm' : 'pointer-events-none opacity-0'
           }`}
+          style={{ background: 'rgba(15, 23, 42, 0.3)' }}
           onClick={() => setSidebarOpen(false)}
         ></div>
         <div
-          className={`fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-200 lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-out lg:static lg:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >

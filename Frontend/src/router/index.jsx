@@ -89,8 +89,10 @@ const AppRouter = () => {
     <Routes>
       {/* Public Routes - No Header/BottomNav */}
       <Route path="/" element={
-        <Navigate to="/vendor" replace />
+        isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Welcome />
       } />
+      {/* Route alias for vender misspelling */}
+      <Route path="/vender/*" element={<Navigate to="/vendor" replace />} />
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Login />
       } />
@@ -333,7 +335,7 @@ const AppRouter = () => {
       <Route path="/theme-test" element={<ThemeSystemTest />} />
       
       <Route path="*" element={
-        <Navigate to="/vendor" replace />
+        <Navigate to="/" replace />
       } />
     </Routes>
   );
