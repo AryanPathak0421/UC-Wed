@@ -89,7 +89,7 @@ const AppRouter = () => {
     <Routes>
       {/* Public Routes - No Header/BottomNav */}
       <Route path="/" element={
-        isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Welcome />
+        <Navigate to="/vendor" replace />
       } />
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Login />
@@ -332,9 +332,8 @@ const AppRouter = () => {
       {/* Theme System Test Route */}
       <Route path="/theme-test" element={<ThemeSystemTest />} />
       
-      {/* Catch all - redirect to welcome or dashboard based on auth */}
       <Route path="*" element={
-        <Navigate to={isAuthenticated ? "/user/dashboard" : "/"} replace />
+        <Navigate to="/vendor" replace />
       } />
     </Routes>
   );
