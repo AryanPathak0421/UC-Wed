@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
-import { loadVendorState, saveVendorState } from './vendorStore';
+import { defaultVendorState } from './vendorStore';
+import { vendorApi } from './vendorApi';
 
 export const useVendorState = () => {
-  const [vendorState, setVendorState] = useState(loadVendorState);
+  const [vendorState, setVendorState] = useState(defaultVendorState);
 
   useEffect(() => {
-    if (vendorState && vendorState.leads && Object.keys(vendorState).length > 0) {
-      console.log('Pushing vendor state to LocalStorage');
-      saveVendorState(vendorState);
+    const token = localStorage.getItem('vendorToken');
+    if (token) {
+      const fetchProfile = async () => {
+        try {
+          const res = await vendorApi.getProfile(token);
+          if (res.success && res.data) {
+            setVendorState((prev) => ({ ...prev, ...res.data }));
+          }
+        } catch (err) {
+          console.error('Failed to sync vendor state with backend on mount:', err);
+        }
+      };
+      fetchProfile();
     }
-  }, [vendorState]);
-
-  useEffect(() => {
-    const handleSync = () => {
-      console.log('Reloading vendor state from LocalStorage (Sync/Focus)');
-      setVendorState(loadVendorState());
-    };
-
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'vendor-panel-state') handleSync();
-    });
-    window.addEventListener('focus', handleSync);
-    
-    return () => {
-      window.removeEventListener('storage', handleSync);
-      window.removeEventListener('focus', handleSync);
-    };
   }, []);
 
   const updateVendorState = useCallback((patch) => {

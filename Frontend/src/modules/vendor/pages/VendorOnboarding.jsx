@@ -1,6 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import Icon from '../../../components/ui/Icon';
 import { useVendorState } from '../useVendorState';
+import { vendorApi } from '../vendorApi';
 
 const steps = [
   { id: 'business', label: 'Business Details' },
@@ -16,6 +18,15 @@ const VendorOnboarding = () => {
   const navigate = useNavigate();
   const { vendorState, updateVendorState } = useVendorState();
   const currentStepIndex = Math.max(0, steps.findIndex((step) => step.id === stepId));
+
+  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
+
+  const showToast = useCallback((message, type = 'info', duration = 3000) => {
+    setToast({ show: true, message, type });
+    if (duration > 0) {
+      setTimeout(() => setToast((prev) => (prev.message === message ? { ...prev, show: false } : prev)), duration);
+    }
+  }, []);
 
   const [newItem, setNewItem] = useState({ title: '', tag: '' });
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -61,30 +72,51 @@ const VendorOnboarding = () => {
     docInputRefs[key].current?.click();
   };
 
-  const handleDocChange = (key, event) => {
+  const handleDocChange = async (key, event) => {
     const file = event.target.files?.[0];
-    if (file) {
-      updateVendorState({ documents: { ...vendorState.documents, [key]: true } });
+    const token = localStorage.getItem('vendorToken');
+    if (file && token) {
+      showToast(`Uploading ${key === 'idProof' ? 'ID Proof' : key === 'gst' ? 'GST' : 'Agreement'}...`, 'loading', 0);
+      try {
+        const res = await vendorApi.uploadMedia(file, token);
+        if (res.success && res.url) {
+          updateVendorState({ documents: { ...vendorState.documents, [key]: res.url } });
+          showToast('Document uploaded successfully! ✨', 'success');
+          event.target.value = '';
+        } else {
+          showToast(res.message || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        showToast('Server error during document upload', 'error');
+      }
     }
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
-    if (file && newItem.title) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const url = e.target.result;
-        updateVendorState({
-          portfolio: [
-            ...vendorState.portfolio,
-            { id: Date.now().toString(), type: 'Photo', title: newItem.title, tag: newItem.tag || 'General', url }
-          ]
-        });
-        setNewItem({ title: '', tag: '' });
-      };
-      reader.readAsDataURL(file);
+    const token = localStorage.getItem('vendorToken');
+    if (file && newItem.title && token) {
+      showToast('Uploading to portfolio...', 'loading', 0);
+      try {
+        const res = await vendorApi.uploadMedia(file, token);
+        if (res.success && res.url) {
+          updateVendorState({
+            portfolio: [
+              ...vendorState.portfolio,
+              { id: Date.now().toString(), type: 'Photo', title: newItem.title, tag: newItem.tag || 'General', url: res.url }
+            ]
+          });
+          setNewItem({ title: '', tag: '' });
+          showToast('Portfolio item added! ✨', 'success');
+          event.target.value = '';
+        } else {
+          showToast(res.message || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        showToast('Server error during upload', 'error');
+      }
     } else if (!newItem.title) {
-      alert('Please enter a project title first.');
+      showToast('Please enter a project title first', 'info');
     }
   };
 
@@ -92,7 +124,7 @@ const VendorOnboarding = () => {
     switch (id) {
       case 'business':
         const { description, years, teamSize, languages, serviceCities } = vendorState.businessDetails;
-        return description && years && teamSize && languages.length > 0 && serviceCities.length > 0;
+        return description && years && teamSize && languages.some(l => l.trim()) && serviceCities.some(l => l.trim());
       case 'services':
         return vendorState.services.length > 0;
       case 'pricing':
@@ -130,24 +162,37 @@ const VendorOnboarding = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const check = canNavigateTo(currentStepIndex + 1);
     if (!check.complete) {
       alert(`⚠️ Requirement Missing: Please finish "${check.stepLabel}" to continue.`);
       return;
     }
 
-    const nextStep = steps[currentStepIndex + 1];
-    if (nextStep) {
-      navigate('/vendor/onboarding/' + nextStep.id);
-    } else {
+    const stepData = vendorState[stepId] || vendorState.businessDetails; // Map step to correct state object
+    const token = localStorage.getItem('vendorToken');
+
+    if (token) {
+      try {
+        const res = await vendorApi.updateOnboarding(stepId, stepData, token);
+        if (res.success) {
+          updateVendorState({ vendor: res.data });
+        }
+      } catch (err) {
+        console.error('Failed to sync onboarding step with backend:', err);
+      }
+    }
+
+    if (currentStepIndex === steps.length - 1) {
       navigate('/vendor/dashboard');
+    } else {
+      navigate('/vendor/onboarding/' + steps[currentStepIndex + 1].id);
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-12 px-4 sm:px-6 relative z-10">
-      <div className="rounded-[2.5rem] p-6 sm:p-10 shadow-2xl relative overflow-hidden" style={{
+    <div className="max-w-5xl mx-auto pb-6 px-1 sm:px-2 relative z-10">
+      <div className="rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden" style={{
         background: 'rgba(255, 255, 255, 0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
@@ -161,17 +206,20 @@ const VendorOnboarding = () => {
         }}></div>
 
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
+          <div className="flex-1">
             <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: '#ec4899' }}>Vendor Onboarding</p>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">Complete your profile</h2>
             <p className="text-xs sm:text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Finish setup to boost visibility and unlock leads.</p>
           </div>
-          <div className="text-[10px] sm:text-xs font-black uppercase tracking-wider px-4 py-2 rounded-full" style={{
-            background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
-            color: '#be185d',
-            border: '1px solid rgba(236, 72, 153, 0.1)'
-          }}>
-            Step {currentStepIndex + 1} of {steps.length}
+          <div className="relative">
+            <img src="/assets/vendor/success.png" alt="Celebration" className="h-20 sm:h-32 w-auto absolute -top-12 sm:-top-20 -right-2 sm:-right-8 animate-[pulse-glow_4s_ease-in-out_infinite] img-transparent-fix" />
+            <div className="text-[10px] sm:text-xs font-black uppercase tracking-wider px-4 py-2 rounded-full relative z-10" style={{
+              background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+              color: '#be185d',
+              border: '1px solid rgba(236, 72, 153, 0.1)'
+            }}>
+              Step {currentStepIndex + 1} of {steps.length}
+            </div>
           </div>
         </div>
 
@@ -184,10 +232,10 @@ const VendorOnboarding = () => {
                 to={'/vendor/onboarding/' + step.id}
                 onClick={(e) => handleStepClick(e, index, step.id)}
                 className="rounded-2xl px-5 py-3 text-[11px] sm:text-xs font-black transition-all uppercase tracking-wider"
-                style={index === currentStepIndex 
-                  ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' } 
-                  : index < currentStepIndex 
-                    ? { background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d', border: '1px solid rgba(236, 72, 153, 0.15)' } 
+                style={index === currentStepIndex
+                  ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' }
+                  : index < currentStepIndex
+                    ? { background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d', border: '1px solid rgba(236, 72, 153, 0.15)' }
                     : { background: 'rgba(253, 242, 248, 0.3)', color: '#94a3b8', border: '1px solid rgba(236, 72, 153, 0.08)' }
                 }
               >
@@ -232,9 +280,12 @@ const VendorOnboarding = () => {
                       background: 'rgba(255, 255, 255, 0.6)'
                     }}
                     value={vendorState.businessDetails.years}
-                    placeholder="e.g. 5+ Years"
+                    placeholder="e.g. 5"
+                    onKeyDown={(e) => {
+                      if (e.key.length === 1 && !/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
                     onChange={(event) => updateVendorState({
-                      businessDetails: { ...vendorState.businessDetails, years: event.target.value }
+                      businessDetails: { ...vendorState.businessDetails, years: event.target.value.replace(/[^0-9]/g, '') }
                     })}
                   />
                 </div>
@@ -249,9 +300,12 @@ const VendorOnboarding = () => {
                       background: 'rgba(255, 255, 255, 0.6)'
                     }}
                     value={vendorState.businessDetails.teamSize}
-                    placeholder="e.g. 8 Experts"
+                    placeholder="e.g. 8"
+                    onKeyDown={(e) => {
+                      if (e.key.length === 1 && !/[0-9]/.test(e.key)) e.preventDefault();
+                    }}
                     onChange={(event) => updateVendorState({
-                      businessDetails: { ...vendorState.businessDetails, teamSize: event.target.value }
+                      businessDetails: { ...vendorState.businessDetails, teamSize: event.target.value.replace(/[^0-9]/g, '') }
                     })}
                   />
                 </div>
@@ -266,9 +320,15 @@ const VendorOnboarding = () => {
                       background: 'rgba(255, 255, 255, 0.6)'
                     }}
                     value={vendorState.businessDetails.languages.join(', ')}
-                    onChange={(event) => updateVendorState({
-                      businessDetails: { ...vendorState.businessDetails, languages: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }
-                    })}
+                    onKeyDown={(e) => {
+                      if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                    }}
+                    onChange={(event) => {
+                      const val = event.target.value.replace(/[0-9]/g, '');
+                      updateVendorState({
+                        businessDetails: { ...vendorState.businessDetails, languages: val.split(',').map(s => s.trimStart()) }
+                      });
+                    }}
                     placeholder="e.g. Hindi, English"
                   />
                 </div>
@@ -283,9 +343,15 @@ const VendorOnboarding = () => {
                       background: 'rgba(255, 255, 255, 0.6)'
                     }}
                     value={vendorState.businessDetails.serviceCities.join(', ')}
-                    onChange={(event) => updateVendorState({
-                      businessDetails: { ...vendorState.businessDetails, serviceCities: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }
-                    })}
+                    onKeyDown={(e) => {
+                      if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                    }}
+                    onChange={(event) => {
+                      const val = event.target.value.replace(/[0-9]/g, '');
+                      updateVendorState({
+                        businessDetails: { ...vendorState.businessDetails, serviceCities: val.split(',').map(s => s.trimStart()) }
+                      });
+                    }}
                     placeholder="e.g. Indore, Bhopal"
                   />
                 </div>
@@ -300,8 +366,8 @@ const VendorOnboarding = () => {
                   <h3 className="text-xl font-black text-slate-900 leading-tight">Services offered</h3>
                   <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Add information about the services you provide.</p>
                 </div>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="vendor-cta rounded-2xl px-6 py-3 text-xs font-black tracking-wide"
                   onClick={() => setShowServiceModal(true)}
                 >
@@ -324,8 +390,8 @@ const VendorOnboarding = () => {
                         <h3 className="text-2xl font-black text-slate-900 leading-none">Add New Service</h3>
                         <p className="text-sm font-medium mt-2" style={{ color: '#94a3b8' }}>Create a new service listing for your profile.</p>
                       </div>
-                      <button 
-                        onClick={() => setShowServiceModal(false)} 
+                      <button
+                        onClick={() => setShowServiceModal(false)}
                         className="h-10 w-10 flex items-center justify-center rounded-full text-slate-400 hover:text-rose-500 transition-all active:scale-90"
                         style={{ background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)' }}
                       >
@@ -339,7 +405,7 @@ const VendorOnboarding = () => {
                       <div className="grid gap-5 sm:grid-cols-2">
                         <div className="space-y-2.5">
                           <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Service Name</label>
-                          <input 
+                          <input
                             className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
                             style={{
                               border: '1px solid rgba(236, 72, 153, 0.15)',
@@ -347,19 +413,22 @@ const VendorOnboarding = () => {
                             }}
                             placeholder="e.g. Royal Stage Decor"
                             value={newService.name}
-                            onChange={(e) => setNewService({...newService, name: e.target.value})}
+                            onKeyDown={(e) => {
+                              if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                            }}
+                            onChange={(e) => setNewService({ ...newService, name: e.target.value.replace(/[0-9]/g, '') })}
                           />
                         </div>
                         <div className="space-y-2.5">
                           <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Category</label>
-                          <select 
+                          <select
                             className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all appearance-none"
                             style={{
                               border: '1px solid rgba(236, 72, 153, 0.15)',
                               background: 'rgba(253, 242, 248, 0.3)'
                             }}
                             value={newService.category}
-                            onChange={(e) => setNewService({...newService, category: e.target.value})}
+                            onChange={(e) => setNewService({ ...newService, category: e.target.value })}
                           >
                             <option value="">Select Category</option>
                             <option>Decoration</option>
@@ -372,7 +441,7 @@ const VendorOnboarding = () => {
 
                       <div className="space-y-2.5">
                         <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Starting Price (₹)</label>
-                        <input 
+                        <input
                           type="number"
                           className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
                           style={{
@@ -381,7 +450,7 @@ const VendorOnboarding = () => {
                           }}
                           placeholder="e.g. 50000"
                           value={newService.basePrice}
-                          onChange={(e) => setNewService({...newService, basePrice: e.target.value})}
+                          onChange={(e) => setNewService({ ...newService, basePrice: e.target.value })}
                         />
                       </div>
 
@@ -389,7 +458,7 @@ const VendorOnboarding = () => {
                         <p className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Key Inclusions</p>
                         <div className="space-y-3">
                           {newService.inclusions.map((inc, idx) => (
-                            <input 
+                            <input
                               key={idx}
                               placeholder={`Service Feature ${idx + 1}`}
                               className="w-full rounded-2xl px-5 py-3 text-sm font-medium transition-all outline-none"
@@ -401,14 +470,14 @@ const VendorOnboarding = () => {
                               onChange={(e) => {
                                 const incs = [...newService.inclusions];
                                 incs[idx] = e.target.value;
-                                setNewService({...newService, inclusions: incs});
+                                setNewService({ ...newService, inclusions: incs });
                               }}
                             />
                           ))}
                         </div>
                       </div>
 
-                      <button 
+                      <button
                         className="vendor-cta w-full rounded-2xl py-5 font-black text-lg mt-6 active:scale-95 transition-all"
                         onClick={handleSaveService}
                       >
@@ -435,7 +504,7 @@ const VendorOnboarding = () => {
                       border: '1px solid rgba(236, 72, 153, 0.1)',
                       boxShadow: '0 4px 20px rgba(236, 72, 153, 0.05)'
                     }}>
-                      <button 
+                      <button
                         onClick={() => updateVendorState({ services: vendorState.services.filter(s => s.id !== service.id) })}
                         className="absolute -top-3 -right-3 h-8 w-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
                         style={{
@@ -444,7 +513,7 @@ const VendorOnboarding = () => {
                           color: '#be185d'
                         }}
                       >
-                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
@@ -515,7 +584,7 @@ const VendorOnboarding = () => {
                   <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Upload your best work to attract more customers.</p>
                 </div>
               </div>
-              
+
               <div className="grid gap-8 md:grid-cols-2">
                 <div className="space-y-4">
                   <div className="rounded-[2rem] border border-pink-100 p-8" style={{ background: 'linear-gradient(135deg, rgba(253,242,248,0.5), rgba(245,243,255,0.5))' }}>
@@ -523,23 +592,29 @@ const VendorOnboarding = () => {
                     <div className="space-y-5">
                       <div className="space-y-2">
                         <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Project Title</label>
-                        <input 
+                        <input
                           className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
                           style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.8)' }}
                           placeholder="e.g. Royal Palace Wedding"
                           value={newItem.title}
-                          onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                          onKeyDown={(e) => {
+                            if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                          }}
+                          onChange={(e) => setNewItem({ ...newItem, title: e.target.value.replace(/[0-9]/g, '') })}
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Category Tag</label>
-                        <input 
+                        <input
                           className="w-full rounded-2xl px-5 py-3.5 text-sm font-semibold transition-all"
                           style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.8)' }}
                           placeholder="e.g. Reception, Ceremony"
                           value={newItem.tag}
-                          onChange={(e) => setNewItem({ ...newItem, tag: e.target.value })}
+                          onKeyDown={(e) => {
+                            if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                          }}
+                          onChange={(e) => setNewItem({ ...newItem, tag: e.target.value.replace(/[0-9]/g, '') })}
                         />
                       </div>
 
@@ -550,8 +625,8 @@ const VendorOnboarding = () => {
                         accept="image/*"
                         onChange={handleFileChange}
                       />
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className="vendor-cta w-full rounded-2xl py-4 font-black text-base mt-4 active:scale-95 transition-all"
                         onClick={handleUploadClick}
                       >
@@ -619,8 +694,8 @@ const VendorOnboarding = () => {
                   <button
                     type="button"
                     className="rounded-2xl px-5 py-3 text-xs font-black transition-all active:scale-95 whitespace-nowrap"
-                    style={vendorState.documents[docKey] 
-                      ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' } 
+                    style={vendorState.documents[docKey]
+                      ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' }
                       : { background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', color: '#be185d', border: '1px solid rgba(236, 72, 153, 0.15)' }}
                     onClick={() => handleDocClick(docKey)}
                   >
@@ -644,7 +719,12 @@ const VendorOnboarding = () => {
                   style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.accountName}
                   placeholder="Name as per bank records"
-                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, accountName: event.target.value } })}
+                  onChange={(event) => updateVendorState({
+                    bank: { ...vendorState.bank, accountName: event.target.value.replace(/[^a-zA-Z ]/g, '') }
+                  })}
+                  onKeyDown={(e) => {
+                    if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                  }}
                 />
               </div>
               <div className="space-y-2">
@@ -654,7 +734,10 @@ const VendorOnboarding = () => {
                   style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.accountNumber}
                   placeholder="Enter 12-16 digit account number"
-                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, accountNumber: event.target.value } })}
+                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, accountNumber: event.target.value.replace(/[^0-9]/g, '') } })}
+                  onKeyDown={(e) => {
+                    if (e.key.length === 1 && !/[0-9]/.test(e.key)) e.preventDefault();
+                  }}
                 />
               </div>
               <div className="space-y-2">
@@ -664,7 +747,7 @@ const VendorOnboarding = () => {
                   style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.ifsc}
                   placeholder="e.g. SBIN0001234"
-                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, ifsc: event.target.value } })}
+                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, ifsc: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '') } })}
                 />
               </div>
               <div className="space-y-2">
@@ -674,7 +757,7 @@ const VendorOnboarding = () => {
                   style={{ border: '1px solid rgba(236, 72, 153, 0.15)', background: 'rgba(255, 255, 255, 0.6)' }}
                   value={vendorState.bank.upiId}
                   placeholder="e.g. name@upi"
-                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, upiId: event.target.value } })}
+                  onChange={(event) => updateVendorState({ bank: { ...vendorState.bank, upiId: event.target.value.toLowerCase().replace(/[^a-z0-9.@-]/g, '') } })}
                 />
               </div>
             </div>
@@ -682,15 +765,38 @@ const VendorOnboarding = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t flex justify-end" style={{ borderColor: 'rgba(236, 72, 153, 0.15)' }}>
-          <button 
-            type="button" 
-            className="vendor-cta rounded-2xl px-12 py-4 text-base font-black tracking-wide shadow-xl transition-all active:scale-95" 
+          <button
+            type="button"
+            className="vendor-cta rounded-2xl px-12 py-4 text-base font-black tracking-wide shadow-xl transition-all active:scale-95"
             style={{ boxShadow: '0 8px 30px rgba(236, 72, 153, 0.25)' }}
             onClick={handleNext}
           >
             {(currentStepIndex === steps.length - 1 ? 'Finish Profile Setup' : 'Save & Continue')}
           </button>
         </div>
+
+        {/* Global Toast Notification */}
+        {toast.show && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[10000] animate-in fade-in slide-in-from-bottom-5 duration-300">
+            <div className="flex items-center gap-4 px-6 py-4 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/20 min-w-max"
+              style={{
+                background: toast.type === 'error'
+                  ? 'linear-gradient(135deg, #ef4444, #b91c1c)'
+                  : 'linear-gradient(135deg, #ec4899, #db2777, #a855f7)',
+                color: 'white',
+                boxShadow: '0 20px 40px -10px rgba(236, 72, 153, 0.4)'
+              }}>
+              {toast.type === 'loading' ? (
+                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : toast.type === 'success' ? (
+                <div className="h-6 w-6 flex items-center justify-center rounded-full bg-white/20 text-xs text-white">✓</div>
+              ) : (
+                <div className="text-xl">✨</div>
+              )}
+              <p className="font-black text-xs sm:text-sm uppercase tracking-wider">{toast.message}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

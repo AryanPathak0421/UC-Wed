@@ -1,12 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Poppins:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 /* ===== WedMeGood-Inspired Premium Vendor Theme ===== */
 
 .vendor-shell {
-  font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
   background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5f3ff 70%, #eff6ff 100%);
   color: #1e293b;
   min-height: 100vh;
+}
+
+.vendor-shell h1, 
+.vendor-shell h2, 
+.vendor-shell h3,
+.vendor-heading-serif {
+  font-family: 'Playfair Display', serif;
 }
 
 /* ---- Glass-morphism Surface Cards ---- */
@@ -297,4 +304,17 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.blend-multiply {
+  mix-blend-mode: multiply;
+}
+
+.blend-screen {
+  mix-blend-mode: screen;
+}
+
+.img-transparent-fix {
+  mix-blend-mode: multiply;
+  filter: contrast(1.1) brightness(1.1);
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/ui/Icon';
 import { useVendorState } from '../useVendorState';
@@ -6,14 +7,21 @@ const VendorVerify = () => {
   const navigate = useNavigate();
   const { vendorState, updateVendorState } = useVendorState();
   const { verification } = vendorState;
+  const [inputs, setInputs] = useState({ phone: '', email: '' });
+  const [errors, setErrors] = useState({ phone: '', email: '' });
 
-  const updateVerification = (field) => {
-    updateVendorState({ verification: { ...verification, [field]: !verification[field] } });
+  const handleVerify = (field, hardcodedOtp) => {
+    if (inputs[field] === hardcodedOtp) {
+      updateVendorState({ verification: { ...verification, [`${field}Verified`]: true } });
+      setErrors({ ...errors, [field]: '' });
+    } else {
+      setErrors({ ...errors, [field]: 'Invalid OTP. Please try again.' });
+    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="rounded-[2.5rem] p-8 lg:p-12 shadow-2xl relative overflow-hidden" style={{
+    <div className="max-w-3xl mx-auto px-1">
+      <div className="rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden" style={{
         background: 'rgba(255, 255, 255, 0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
@@ -44,59 +52,93 @@ const VendorVerify = () => {
 
         <div className="space-y-4">
           {/* Phone Verification */}
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl p-6 transition-all" style={{
+          <div className="rounded-3xl p-6 transition-all" style={{
             background: 'rgba(253, 242, 248, 0.3)',
             border: '1px solid rgba(236, 72, 153, 0.1)'
           }}>
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-xl" style={{
-                background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)'
-              }}>
-                <span className="text-xl">&#128241;</span>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-xl" style={{
+                  background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)'
+                }}>
+                  <span className="text-xl">&#128241;</span>
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-800 tracking-wide">Phone verification</p>
+                  <p className="text-[11px] font-bold mt-0.5" style={{ color: '#94a3b8' }}>OTP: 1234 (Auto-sent to registered number)</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-black text-slate-800 tracking-wide">Phone verification</p>
-                <p className="text-[11px] font-bold mt-0.5" style={{ color: '#94a3b8' }}>OTP sent to registered number.</p>
-              </div>
+              {verification.phoneVerified ? (
+                <div className="rounded-2xl px-5 py-3 text-xs font-black" style={{ background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white' }}>
+                  ✓ Verified
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    maxLength="4"
+                    placeholder="OTP"
+                    className="w-20 rounded-xl px-3 py-3 text-center text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all"
+                    value={inputs.phone}
+                    onChange={(e) => setInputs({ ...inputs, phone: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    className="rounded-xl px-5 py-3 text-xs font-black transition-all active:scale-95 text-white"
+                    style={{ background: 'linear-gradient(135deg, #ec4899, #db2777)' }}
+                    onClick={() => handleVerify('phone', '1234')}
+                  >
+                    Verify
+                  </button>
+                </div>
+              )}
             </div>
-            <button
-              type="button"
-              className="rounded-2xl px-5 py-3 text-xs font-black transition-all active:scale-95"
-              style={verification.phoneVerified 
-                ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' } 
-                : { border: '1px solid rgba(236, 72, 153, 0.2)', color: '#be185d', background: 'white' }}
-              onClick={() => updateVerification('phoneVerified')}
-            >
-              {verification.phoneVerified ? '✓ Verified' : 'Mark as verified'}
-            </button>
+            {errors.phone && <p className="text-[10px] font-bold text-rose-500 mt-2">{errors.phone}</p>}
           </div>
 
           {/* Email Verification */}
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl p-6 transition-all" style={{
+          <div className="rounded-3xl p-6 transition-all" style={{
             background: 'rgba(253, 242, 248, 0.3)',
             border: '1px solid rgba(236, 72, 153, 0.1)'
           }}>
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-xl" style={{
-                background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)'
-              }}>
-                <span className="text-xl">&#128231;</span>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-xl" style={{
+                  background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)'
+                }}>
+                  <span className="text-xl">&#128231;</span>
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-800 tracking-wide">Email verification</p>
+                  <p className="text-[11px] font-bold mt-0.5" style={{ color: '#94a3b8' }}>OTP: 0000 (Auto-sent to your email)</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-black text-slate-800 tracking-wide">Email verification</p>
-                <p className="text-[11px] font-bold mt-0.5" style={{ color: '#94a3b8' }}>Link sent to your email.</p>
-              </div>
+              {verification.emailVerified ? (
+                <div className="rounded-2xl px-5 py-3 text-xs font-black" style={{ background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white' }}>
+                  ✓ Verified
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    maxLength="4"
+                    placeholder="OTP"
+                    className="w-20 rounded-xl px-3 py-3 text-center text-sm font-bold border-2 focus:border-pink-500 outline-none transition-all"
+                    value={inputs.email}
+                    onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    className="rounded-xl px-5 py-3 text-xs font-black transition-all active:scale-95 text-white"
+                    style={{ background: 'linear-gradient(135deg, #ec4899, #db2777)' }}
+                    onClick={() => handleVerify('email', '0000')}
+                  >
+                    Verify
+                  </button>
+                </div>
+              )}
             </div>
-            <button
-              type="button"
-              className="rounded-2xl px-5 py-3 text-xs font-black transition-all active:scale-95"
-              style={verification.emailVerified 
-                ? { background: 'linear-gradient(135deg, #ec4899, #db2777)', color: 'white', boxShadow: '0 4px 15px rgba(236, 72, 153, 0.3)' } 
-                : { border: '1px solid rgba(236, 72, 153, 0.2)', color: '#be185d', background: 'white' }}
-              onClick={() => updateVerification('emailVerified')}
-            >
-              {verification.emailVerified ? '✓ Verified' : 'Mark as verified'}
-            </button>
+            {errors.email && <p className="text-[10px] font-bold text-rose-500 mt-2">{errors.email}</p>}
           </div>
         </div>
 

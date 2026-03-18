@@ -11,6 +11,7 @@ require('dotenv').config();
 
 // Import routes
 const userRoutes = require('./modules/user');
+const vendorRoutes = require('./modules/vendor');
 
 // Create Express app
 const app = express();
@@ -85,6 +86,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/user', userRoutes);
+app.use('/api/vendor', vendorRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -144,7 +146,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
-  
+
   app.listen(PORT, () => {
     console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     console.log(`📱 API URL: http://localhost:${PORT}/api`);

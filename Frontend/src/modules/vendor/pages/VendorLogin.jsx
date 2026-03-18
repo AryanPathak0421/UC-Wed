@@ -1,23 +1,38 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Icon from '../../../components/ui/Icon';
+import { vendorApi } from '../vendorApi';
+import { useVendorState } from '../useVendorState';
 
 const VendorLogin = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e) => {
+  const { updateVendorState } = useVendorState();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (email && password) {
-      navigate('/vendor/dashboard');
+      try {
+        const res = await vendorApi.login(email, password);
+        if (res.success) {
+          localStorage.setItem('vendorToken', res.token);
+          updateVendorState({ vendor: res.vendor });
+          navigate('/vendor/dashboard');
+        } else {
+          alert(res.message || 'Login failed');
+        }
+      } catch (err) {
+        alert('Server error connecting to backend');
+      }
     } else {
       alert('Please enter your credentials');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{
+    <div className="min-h-screen flex items-center justify-center px-2 py-4 relative overflow-hidden" style={{
       background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5f3ff 70%, #eff6ff 100%)'
     }}>
       {/* Decorative blobs */}
@@ -30,8 +45,8 @@ const VendorLogin = () => {
         filter: 'blur(80px)'
       }}></div>
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="rounded-[2rem] p-8 lg:p-10 shadow-2xl relative overflow-hidden" style={{
+      <div className="w-full max-w-md relative z-10 px-1">
+        <div className="rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden" style={{
           background: 'rgba(255, 255, 255, 0.85)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
@@ -44,12 +59,12 @@ const VendorLogin = () => {
             animation: 'gradient-shift 4s ease infinite'
           }}></div>
 
-          <div className="text-center mb-8">
-            <div className="inline-flex h-16 w-16 rounded-2xl items-center justify-center text-2xl mb-4 shadow-lg" style={{
-              background: 'linear-gradient(135deg, #ec4899, #db2777)',
-              boxShadow: '0 8px 30px rgba(236, 72, 153, 0.35)'
-            }}>
-              <span className="text-white font-black">W</span>
+          <div className="text-center mb-8 mt-5">
+            <div className="inline-flex h-40 w-auto items-center justify-center mb-6 transition-all duration-500 hover:scale-110">
+              <img src="/assets/vendor/logo_theme.png" alt="Logo" className="h-full w-auto rounded-3xl" />
+            </div>
+            <div className="absolute top-2 right-2 sm:top-4 sm:right-4 animate-bounce">
+              <img src="/assets/vendor/key.png" alt="Key" className="h-12 sm:h-20 w-auto opacity-90 img-transparent-fix" />
             </div>
             <p className="text-[10px] font-black uppercase tracking-[0.25em] mb-2" style={{ color: '#ec4899' }}>Vendor Portal</p>
             <h2 className="text-3xl font-black text-slate-900">Welcome Back</h2>
@@ -110,7 +125,7 @@ const VendorLogin = () => {
 
           <div className="mt-8 text-center">
             <p className="text-sm font-medium" style={{ color: '#94a3b8' }}>
-              Don't have a vendor account? 
+              Don't have a vendor account?
               <Link to="/vendor/register" className="ml-1 font-black" style={{ color: '#ec4899' }}>Register Now</Link>
             </p>
           </div>

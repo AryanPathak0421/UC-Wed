@@ -30,9 +30,9 @@ const VendorSidebar = ({ onClose }) => {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="h-8 w-8 rounded-xl flex items-center justify-center text-white text-xs font-black" style={{
-                  background: 'linear-gradient(135deg, #ec4899, #db2777)'
-                }}>W</div>
+                <div className="h-24 w-auto flex items-center justify-center transition-transform hover:scale-110">
+                  <img src="/assets/vendor/logo_theme.png" alt="UtsavChakra Logo" className="h-full w-auto rounded-2xl" />
+                </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: '#ec4899' }}>Vendor Panel</p>
               </div>
               <h2 className="text-lg font-black text-slate-900 tracking-tight">Emerald Studio</h2>
@@ -62,10 +62,9 @@ const VendorSidebar = ({ onClose }) => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `group flex items-center gap-3 rounded-2xl px-4 py-3 text-[13px] font-bold transition-all duration-300 relative overflow-hidden ${
-                  isActive
-                    ? 'text-white shadow-lg'
-                    : 'text-slate-500 hover:text-pink-600 hover:bg-pink-50/50'
+                `group flex items-center gap-3 rounded-2xl px-4 py-3 text-[13px] font-bold transition-all duration-300 relative overflow-hidden ${isActive
+                  ? 'text-white shadow-lg'
+                  : 'text-slate-500 hover:text-pink-600 hover:bg-pink-50/50'
                 }`
               }
               style={({ isActive }) => isActive ? {
@@ -79,11 +78,10 @@ const VendorSidebar = ({ onClose }) => {
                   {isActive && (
                     <div className="absolute left-0 top-0 w-1 h-full rounded-r-full bg-white/40"></div>
                   )}
-                  <div className={`flex items-center justify-center h-8 w-8 rounded-xl transition-all duration-300 ${
-                    isActive 
-                      ? 'bg-white/20' 
-                      : 'bg-slate-50 group-hover:bg-pink-100'
-                  }`}>
+                  <div className={`flex items-center justify-center h-8 w-8 rounded-xl transition-all duration-300 ${isActive
+                    ? 'bg-white/20'
+                    : 'bg-slate-50 group-hover:bg-pink-100'
+                    }`}>
                     <Icon name={item.icon} size="sm" color="current" />
                   </div>
                   <span>{item.label}</span>
@@ -98,8 +96,8 @@ const VendorSidebar = ({ onClose }) => {
 
         {/* Sign Out */}
         <div className="px-4 py-4" style={{ borderTop: '1px solid rgba(236, 72, 153, 0.08)' }}>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="w-full rounded-2xl px-4 py-3.5 text-sm font-bold text-slate-500 hover:text-rose-600 active:scale-95 transition-all flex items-center justify-center gap-3"
             style={{
               background: 'linear-gradient(135deg, #fdf2f8, #fff1f2)',

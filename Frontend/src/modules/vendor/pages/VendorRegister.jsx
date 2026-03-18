@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/ui/Icon';
 import { useVendorState } from '../useVendorState';
+import { vendorApi } from '../vendorApi';
 
 const VendorRegister = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const VendorRegister = () => {
   const progressPercent = Math.round((progressCount / 7) * 100);
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden" style={{
+    <div className="min-h-screen flex items-center justify-center py-4 px-2 relative overflow-hidden" style={{
       background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5f3ff 70%, #eff6ff 100%)'
     }}>
       {/* Decorative blobs */}
@@ -41,8 +42,8 @@ const VendorRegister = () => {
         filter: 'blur(80px)'
       }}></div>
 
-      <div className="max-w-2xl w-full mx-auto relative z-10">
-        <div className="rounded-[2.5rem] p-8 lg:p-12 shadow-2xl relative overflow-hidden" style={{
+      <div className="max-w-4xl mx-auto py-4 px-1">
+        <div className="rounded-3xl p-4 sm:p-8 shadow-2xl relative overflow-hidden vendor-surface" style={{
           background: 'rgba(255, 255, 255, 0.85)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
@@ -56,18 +57,21 @@ const VendorRegister = () => {
           }}></div>
 
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
+            <div className="flex-1">
               <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: '#ec4899' }}>Vendor Registration</p>
               <h2 className="text-3xl font-black text-slate-900 tracking-tight mt-1">Join the platform</h2>
               <p className="text-sm font-medium mt-1" style={{ color: '#94a3b8' }}>Create your vendor account and start receiving inquiries.</p>
             </div>
-            <div className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-wider shadow-sm" style={{
-              background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
-              color: '#be185d',
-              border: '1px solid rgba(236, 72, 153, 0.1)'
-            }}>
-              <Icon name="verified" size="xs" color="current" />
-              Secure onboarding
+            <div className="relative">
+              <img src="/assets/vendor/rings_theme.png" alt="Wedding Rings" className="h-24 sm:h-44 w-auto animate-[float_6s_ease-in-out_infinite] rounded-3xl" />
+              <div className="absolute -bottom-2 right-0 flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-wider shadow-sm" style={{
+                background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+                color: '#be185d',
+                border: '1px solid rgba(236, 72, 153, 0.1)'
+              }}>
+                <Icon name="verified" size="xs" color="current" />
+                Secure
+              </div>
             </div>
           </div>
 
@@ -81,9 +85,9 @@ const VendorRegister = () => {
               <span>{progressPercent}%</span>
             </div>
             <div className="h-2 w-full rounded-full overflow-hidden" style={{ background: 'rgba(236, 72, 153, 0.1)' }}>
-              <div 
+              <div
                 className="h-full rounded-full transition-all duration-700 ease-out"
-                style={{ 
+                style={{
                   width: `${progressPercent}%`,
                   background: 'linear-gradient(90deg, #ec4899, #db2777)',
                   boxShadow: '0 0 10px rgba(236, 72, 153, 0.3)'
@@ -107,7 +111,10 @@ const VendorRegister = () => {
                     background: 'rgba(255, 255, 255, 0.6)'
                   }}
                   value={formState.fullName}
-                  onChange={(event) => handleChange('fullName', event.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key >= '0' && e.key <= '9') e.preventDefault();
+                  }}
+                  onChange={(event) => handleChange('fullName', event.target.value.replace(/[^a-zA-Z ]/g, ''))}
                   placeholder="e.g. Aditi Kapoor"
                 />
               </div>
@@ -252,7 +259,7 @@ const VendorRegister = () => {
             style={{ borderColor: 'rgba(236, 72, 153, 0.1)' }}
           >
             <div className="text-sm font-medium" style={{ color: '#64748b' }}>
-              By continuing, you agree to the vendor terms. 
+              By continuing, you agree to the vendor terms.
               <button onClick={() => navigate('/vendor/login')} className="block mt-1 font-black" style={{ color: '#ec4899' }}>
                 Already have an account? Sign In
               </button>
@@ -261,9 +268,20 @@ const VendorRegister = () => {
               type="button"
               className="vendor-cta rounded-2xl px-10 py-4 text-base font-black tracking-wide shadow-xl w-full md:w-auto"
               style={{ boxShadow: '0 8px 30px rgba(236, 72, 153, 0.25)' }}
-              onClick={() => {
-                if(formState.fullName && formState.password.length >= 8) {
-                  navigate('/vendor/verify')
+              onClick={async () => {
+                if (formState.fullName && formState.password.length >= 8) {
+                  try {
+                    const res = await vendorApi.register(formState);
+                    if (res.success) {
+                      localStorage.setItem('vendorToken', res.token);
+                      updateVendorState({ vendor: res.vendor });
+                      navigate('/vendor/verify');
+                    } else {
+                      alert(res.message || 'Registration failed');
+                    }
+                  } catch (err) {
+                    alert('Server error connecting to backend');
+                  }
                 } else {
                   alert('Please fill out the form completely and ensure password is >= 8 characters.');
                 }
