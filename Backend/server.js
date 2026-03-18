@@ -101,6 +101,10 @@ app.get('/health', (req, res) => {
 app.use('/api/user', userRoutes);
 app.use('/api/vendor', vendorRoutes);
 
+// Fallback for requests without /api prefix
+app.use('/user', userRoutes);
+app.use('/vendor', vendorRoutes);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
