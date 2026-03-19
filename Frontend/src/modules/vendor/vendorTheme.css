@@ -4,7 +4,7 @@
 
 .vendor-shell {
   font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
-  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5f3ff 70%, #eff6ff 100%);
+  background: linear-gradient(135deg, #FAF2F2 0%, #F4DFDF 30%, #f5f3ff 70%, #eff6ff 100%);
   color: #1e293b;
   min-height: 100vh;
 }
@@ -21,9 +21,9 @@
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(236, 72, 153, 0.08);
+  border: 1px solid rgba(210, 138, 140, 0.08);
   box-shadow: 
-    0 4px 24px rgba(236, 72, 153, 0.06),
+    0 4px 24px rgba(210, 138, 140, 0.06),
     0 1px 3px rgba(0, 0, 0, 0.04);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -31,34 +31,34 @@
 .vendor-shell .vendor-surface:hover {
   transform: translateY(-4px);
   box-shadow: 
-    0 20px 50px rgba(236, 72, 153, 0.12),
+    0 20px 50px rgba(210, 138, 140, 0.12),
     0 4px 12px rgba(0, 0, 0, 0.06);
-  border-color: rgba(236, 72, 153, 0.15);
+  border-color: rgba(210, 138, 140, 0.15);
 }
 
 .vendor-shell .vendor-surface-soft {
-  background: linear-gradient(135deg, #fdf2f8 0%, #faf5ff 100%);
-  border: 1px solid rgba(236, 72, 153, 0.1);
+  background: linear-gradient(135deg, #FAF2F2 0%, #faf5ff 100%);
+  border: 1px solid rgba(210, 138, 140, 0.1);
 }
 
 /* ---- Accent Colors - WedMeGood Pink ---- */
 .vendor-shell .vendor-accent {
-  color: #ec4899;
+  color: #D28A8C;
 }
 
 .vendor-shell .vendor-accent-bg {
-  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-  color: #be185d;
+  background: linear-gradient(135deg, #FAF2F2, #F4DFDF);
+  color: #A35E60;
 }
 
 /* ---- CTA Buttons - Vibrant Gradient ---- */
 .vendor-shell .vendor-cta {
-  background: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #be185d 100%);
+  background: linear-gradient(135deg, #D28A8C 0%, #C27A7C 50%, #A35E60 100%);
   color: #ffffff;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 
-    0 4px 15px rgba(236, 72, 153, 0.35),
-    0 2px 4px rgba(236, 72, 153, 0.2);
+    0 4px 15px rgba(210, 138, 140, 0.35),
+    0 2px 4px rgba(210, 138, 140, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -81,13 +81,13 @@
 .vendor-shell .vendor-cta:hover {
   transform: translateY(-3px) scale(1.02);
   box-shadow: 
-    0 12px 30px rgba(236, 72, 153, 0.4),
-    0 4px 8px rgba(236, 72, 153, 0.25);
+    0 12px 30px rgba(210, 138, 140, 0.4),
+    0 4px 8px rgba(210, 138, 140, 0.25);
 }
 
 .vendor-shell .vendor-cta:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+  box-shadow: 0 2px 8px rgba(210, 138, 140, 0.3);
 }
 
 /* ---- General Button Interactions ---- */
@@ -103,17 +103,17 @@
 
 /* ---- Outline CTA ---- */
 .vendor-shell .vendor-cta-outline {
-  border: 2px solid #ec4899;
-  color: #be185d;
+  border: 2px solid #D28A8C;
+  color: #A35E60;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background: transparent;
 }
 
 .vendor-shell .vendor-cta-outline:hover {
-  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
-  color: #ec4899;
+  background: linear-gradient(135deg, #FAF2F2, #F4DFDF);
+  color: #D28A8C;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.15);
+  box-shadow: 0 8px 25px rgba(210, 138, 140, 0.15);
 }
 
 /* ---- Muted Text ---- */
@@ -123,7 +123,7 @@
 
 /* ---- Decorative Grid Background ---- */
 .vendor-shell .vendor-grid-bg {
-  background-image: radial-gradient(rgba(236, 72, 153, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(210, 138, 140, 0.08) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -191,8 +191,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-  50% { box-shadow: 0 0 20px 6px rgba(236, 72, 153, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(210, 138, 140, 0.4); }
+  50% { box-shadow: 0 0 20px 6px rgba(210, 138, 140, 0.15); }
 }
 
 @keyframes gradient-shift {
@@ -244,19 +244,19 @@
   background: transparent;
 }
 .vendor-shell ::-webkit-scrollbar-thumb {
-  background: rgba(236, 72, 153, 0.2);
+  background: rgba(210, 138, 140, 0.2);
   border-radius: 999px;
 }
 .vendor-shell ::-webkit-scrollbar-thumb:hover {
-  background: rgba(236, 72, 153, 0.4);
+  background: rgba(210, 138, 140, 0.4);
 }
 
 /* ---- Premium Input Focus States ---- */
 .vendor-shell input:focus,
 .vendor-shell select:focus,
 .vendor-shell textarea:focus {
-  border-color: #ec4899 !important;
-  box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.1) !important;
+  border-color: #D28A8C !important;
+  box-shadow: 0 0 0 4px rgba(210, 138, 140, 0.1) !important;
   outline: none !important;
 }
 
@@ -284,7 +284,7 @@
 .vendor-shell .decor-blob-1 {
   width: 400px;
   height: 400px;
-  background: #ec4899;
+  background: #D28A8C;
   top: -100px;
   right: -100px;
 }

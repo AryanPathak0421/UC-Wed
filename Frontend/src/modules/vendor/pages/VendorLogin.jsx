@@ -33,11 +33,11 @@ const VendorLogin = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-2 py-4 relative overflow-hidden" style={{
-      background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5f3ff 70%, #eff6ff 100%)'
+      background: 'linear-gradient(135deg, #FAF2F2 0%, #F4DFDF 30%, #f5f3ff 70%, #eff6ff 100%)'
     }}>
       {/* Decorative blobs */}
       <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20" style={{
-        background: 'radial-gradient(circle, #ec4899, transparent 70%)',
+        background: 'radial-gradient(circle, #D28A8C, transparent 70%)',
         filter: 'blur(80px)'
       }}></div>
       <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full opacity-15" style={{
@@ -50,25 +50,25 @@ const VendorLogin = () => {
           background: 'rgba(255, 255, 255, 0.85)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(236, 72, 153, 0.1)'
+          border: '1px solid rgba(210, 138, 140, 0.1)'
         }}>
           {/* Top gradient accent */}
           <div className="absolute top-0 left-0 right-0 h-1.5 rounded-t-[2rem]" style={{
-            background: 'linear-gradient(90deg, #ec4899, #db2777, #a855f7, #ec4899)',
+            background: 'linear-gradient(90deg, #D28A8C, #C27A7C, #a855f7, #D28A8C)',
             backgroundSize: '200% 100%',
             animation: 'gradient-shift 4s ease infinite'
           }}></div>
 
-          <div className="text-center mb-8 mt-5">
-            <div className="inline-flex h-40 w-auto items-center justify-center mb-6 transition-all duration-500 hover:scale-110">
-              <img src="/assets/vendor/logo_theme.png" alt="Logo" className="h-full w-auto rounded-3xl" />
+          <div className="text-center mb-4 mt-3">
+            <div className="inline-flex h-20 sm:h-32 w-auto items-center justify-center mb-3 transition-all duration-500 hover:scale-110">
+              <img src="/assets/vendor/logo_theme.png" alt="Logo" className="h-full w-auto rounded-2xl" />
             </div>
             <div className="absolute top-2 right-2 sm:top-4 sm:right-4 animate-bounce">
-              <img src="/assets/vendor/key.png" alt="Key" className="h-12 sm:h-20 w-auto opacity-90 img-transparent-fix" />
+              <img src="/assets/vendor/key.png" alt="Key" className="h-10 sm:h-16 w-auto opacity-90 img-transparent-fix" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.25em] mb-2" style={{ color: '#ec4899' }}>Vendor Portal</p>
-            <h2 className="text-3xl font-black text-slate-900">Welcome Back</h2>
-            <p className="text-sm font-medium mt-2" style={{ color: '#94a3b8' }}>Sign in to manage your wedding business.</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-1.5" style={{ color: '#be123c' }}>Vendor Portal</p>
+            <h2 className="text-2xl font-bold text-slate-900 drop-shadow-sm">Welcome Back</h2>
+            <p className="text-xs sm:text-sm font-bold mt-1.5" style={{ color: '#475569' }}>Sign in to manage your wedding business.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
@@ -82,7 +82,7 @@ const VendorLogin = () => {
                   type="email"
                   className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-semibold transition-all"
                   style={{
-                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    border: '1px solid rgba(210, 138, 140, 0.15)',
                     background: 'rgba(253, 242, 248, 0.3)'
                   }}
                   placeholder="vendor@example.com"
@@ -95,7 +95,7 @@ const VendorLogin = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: '#94a3b8' }}>Password</label>
-                <button type="button" className="text-[11px] font-black uppercase tracking-wider" style={{ color: '#ec4899' }}>Forgot?</button>
+                <button type="button" className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#D28A8C' }}>Forgot?</button>
               </div>
               <div className="relative">
                 <span className="absolute left-4 top-3.5" style={{ color: '#cbd5e1' }}>
@@ -105,7 +105,7 @@ const VendorLogin = () => {
                   type="password"
                   className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-semibold transition-all"
                   style={{
-                    border: '1px solid rgba(236, 72, 153, 0.15)',
+                    border: '1px solid rgba(210, 138, 140, 0.15)',
                     background: 'rgba(253, 242, 248, 0.3)'
                   }}
                   placeholder="Enter your password"
@@ -117,16 +117,16 @@ const VendorLogin = () => {
 
             <button
               type="submit"
-              className="vendor-cta w-full rounded-2xl py-4 font-black text-lg tracking-wide mt-2"
+              className="vendor-cta w-full rounded-2xl py-4 font-bold text-lg tracking-wide mt-2"
             >
               Sign In
             </button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm font-medium" style={{ color: '#94a3b8' }}>
+          <div className="mt-4 text-center">
+            <p className="text-sm font-bold" style={{ color: '#475569' }}>
               Don't have a vendor account?
-              <Link to="/vendor/register" className="ml-1 font-black" style={{ color: '#ec4899' }}>Register Now</Link>
+              <Link to="/vendor/register" className="ml-1 font-bold underline decoration-rose-200" style={{ color: '#be123c' }}>Register Now</Link>
             </p>
           </div>
         </div>
