@@ -6,7 +6,6 @@ import { vendorApi } from '../vendorApi';
 
 const steps = [
   { id: 'business', label: 'Business Details' },
-  { id: 'services', label: 'Services' },
   { id: 'pricing', label: 'Pricing' },
   { id: 'portfolio', label: 'Portfolio' },
   { id: 'documents', label: 'Documents' },

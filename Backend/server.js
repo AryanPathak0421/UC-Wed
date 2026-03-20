@@ -35,7 +35,7 @@ app.use(helmet({
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173',
-  'http://192.168.1.22:5173',
+  'http://192.168.1.28:5173',
   'https://uc-wed.vercel.app'
 ];
 
