@@ -53,12 +53,12 @@
 
 /* ---- CTA Buttons - Vibrant Gradient ---- */
 .vendor-shell .vendor-cta {
-  background: linear-gradient(135deg, #D28A8C 0%, #C27A7C 50%, #A35E60 100%);
+  background: linear-gradient(135deg, #C85A5D 0%, #B84A4D 50%, #8B3A3D 100%);
   color: #ffffff;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 
-    0 4px 15px rgba(210, 138, 140, 0.35),
-    0 2px 4px rgba(210, 138, 140, 0.2);
+    0 4px 15px rgba(200, 90, 93, 0.45),
+    0 2px 4px rgba(200, 90, 93, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -81,13 +81,13 @@
 .vendor-shell .vendor-cta:hover {
   transform: translateY(-3px) scale(1.02);
   box-shadow: 
-    0 12px 30px rgba(210, 138, 140, 0.4),
-    0 4px 8px rgba(210, 138, 140, 0.25);
+    0 12px 30px rgba(200, 90, 93, 0.5),
+    0 4px 8px rgba(200, 90, 93, 0.35);
 }
 
 .vendor-shell .vendor-cta:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(210, 138, 140, 0.3);
+  box-shadow: 0 2px 8px rgba(200, 90, 93, 0.4);
 }
 
 /* ---- General Button Interactions ---- */
@@ -103,17 +103,17 @@
 
 /* ---- Outline CTA ---- */
 .vendor-shell .vendor-cta-outline {
-  border: 2px solid #D28A8C;
-  color: #A35E60;
+  border: 2px solid #C85A5D;
+  color: #8B3A3D;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background: transparent;
 }
 
 .vendor-shell .vendor-cta-outline:hover {
   background: linear-gradient(135deg, #FAF2F2, #F4DFDF);
-  color: #D28A8C;
+  color: #C85A5D;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(210, 138, 140, 0.15);
+  box-shadow: 0 8px 25px rgba(200, 90, 93, 0.25);
 }
 
 /* ---- Muted Text ---- */
